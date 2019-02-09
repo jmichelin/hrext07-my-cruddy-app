@@ -1,13 +1,24 @@
 {
   "name": "cruddy_app",
   "version": "1.0.0",
-  "description": "",
+  "description": "A full-stack assignment manager web app bui;t using Nuxt.JS, Vuetlify, Node.js, Express, and MongoDB",
   "main": "index.js",
   "scripts": {
     "start": "nodemon backend/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
+  "keywords": [
+    "Javascript",
+    "Vue",
+    "Nuxt",
+    "Node.js",
+    "Express",
+    "Mongoose",
+    "MongoDB",
+    "CRUD",
+    "Hack Reactor",
+    "Galvanize"
+  ],
   "author": "Gabor Szekely <gabor_szekely@hotmail.com>",
   "license": "MIT",
   "dependencies": {
