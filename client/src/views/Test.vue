@@ -2,8 +2,8 @@
   <div>
     <h1>TEST</h1>
     <li v-for="assignment in assignments" :key="assignment._id">
-      <h4>{{assignment.name}}</h4>
-      <p>{{assignment.description}}</p>
+      <h4>{{ assignment.name }}</h4>
+      <p>{{ assignment.description }}</p>
     </li>
   </div>
 </template>
@@ -24,6 +24,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
-
+<style></style>

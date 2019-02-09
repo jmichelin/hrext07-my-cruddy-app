@@ -11,7 +11,7 @@ const assignmentSchema = new Schema({
     type: Date,
     default: Date.now(),
   },
-  notes: {
+  description: {
     type: String,
   },
   tags: {

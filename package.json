@@ -1,7 +1,7 @@
 {
   "name": "cruddy_app",
   "version": "1.0.0",
-  "description": "A full-stack assignment manager web app bui;t using Nuxt.JS, Vuetlify, Node.js, Express, and MongoDB",
+  "description": "A full-stack assignment manager web app built using Vue.js, Vuetlify, Node.js, Express, GraphQL, and MongoDB",
   "main": "index.js",
   "scripts": {
     "client-install": "npm install --prefix client",
@@ -25,10 +25,11 @@
   "author": "Gabor Szekely <gabor_szekely@hotmail.com>",
   "license": "MIT",
   "dependencies": {
-    "body-parser": "^1.18.3",
+    "apollo-server": "^2.4.0",
     "concurrently": "^4.1.0",
+    "core-js": "^3.0.0-beta.3",
     "cors": "^2.8.5",
-    "express": "^4.16.4",
+    "graphql": "^14.1.1",
     "mongoose": "^5.4.10"
   },
   "devDependencies": {

@@ -1,25 +1,22 @@
-const express = require("express");
 const mongoose = require("mongoose");
-const bodyParser = require("body-parser");
-const cors = require("cors");
+const { ApolloServer } = require("apollo-server");
 
-const app = express();
-mongoose.set("useCreateIndex", true);
-const assignmentRoute = require("./routes/assignment-routes");
+const { typeDefs, resolvers } = require("./graphql/schema");
+
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+});
 
 /* Mongoose Connection */
 const { MONGO_URI } = process.env;
+mongoose.set("useCreateIndex", true);
+
 mongoose
   .connect(MONGO_URI, { useNewUrlParser: true })
   .then(() => console.log("Connected to MongoDB"))
   .catch(e => console.error(e));
 
-const port = process.env.PORT || 5001;
-
-app.use(cors());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-
-app.use("/api/assignments", assignmentRoute);
-
-app.listen(port, () => console.log(`Server started on Port ${port}`));
+server.listen().then(({ url }) => {
+  console.log(`🚀  Server ready at ${url}`);
+});
