@@ -1,6 +1,6 @@
 const express = require("express");
+
 const router = express.Router();
-const mongoose = require("mongoose");
 const AssignmentModel = require("../models/assignment-model");
 
 /*
@@ -8,7 +8,7 @@ const AssignmentModel = require("../models/assignment-model");
  *
  */
 
-router.get("/", async (req, res, next) => {
+router.get("/", async (req, res) => {
   if (req.query.id) {
     try {
       const { id } = req.query;
@@ -38,7 +38,7 @@ router.get("/", async (req, res, next) => {
  *
  */
 
-router.post("/", async (req, res, next) => {
+router.post("/", async (req, res) => {
   if (!req.body.assignment) {
     res.status(500).send({ message: "Assignment not included in request." });
   }
@@ -49,9 +49,7 @@ router.post("/", async (req, res, next) => {
     const model = new AssignmentModel(assignment);
     model
       .save()
-      .then(resp => {
-        res.status(201).json(resp);
-      })
+      .then(resp => res.status(201).json(resp))
       .catch(e => {
         console.error(e);
         res
@@ -71,7 +69,7 @@ router.post("/", async (req, res, next) => {
  *
  */
 
-router.put("/", async (req, res, next) => {
+router.put("/", async (req, res) => {
   if (!req.body.assignment) {
     res.status(500).send({ message: "Assignment not included in request." });
   }
@@ -82,7 +80,7 @@ router.put("/", async (req, res, next) => {
 
     const match = await AssignmentModel.findByIdAndUpdate(id, rest, {
       new: true,
-      upsert: false
+      upsert: false,
     });
     res.status(201).json(match);
   } catch (e) {
@@ -98,7 +96,7 @@ router.put("/", async (req, res, next) => {
  *
  */
 
-router.delete("/", async (req, res, next) => {
+router.delete("/", async (req, res) => {
   if (!req.query.id) {
     res
       .status(500)

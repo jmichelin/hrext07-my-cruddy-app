@@ -1,7 +1,8 @@
 const express = require("express");
-const app = express();
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
+
+const app = express();
 mongoose.set("useCreateIndex", true);
 const assignmentRoute = require("./routes/assignment-routes");
 
@@ -12,7 +13,7 @@ mongoose
   .then(() => console.log("Connected to MongoDB"))
   .catch(e => console.error(e));
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 5001;
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
