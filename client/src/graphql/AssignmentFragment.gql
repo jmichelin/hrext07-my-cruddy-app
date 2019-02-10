@@ -1,0 +1,8 @@
+fragment assignment on Assignment {
+  _id
+  name
+  description
+  due
+  tags
+  completed
+}

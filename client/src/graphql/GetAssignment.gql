@@ -1,0 +1,6 @@
+#import "./AssignmentFragment.gql"
+
+query GetAssignment($id: ID) {
+  assignment(id: $id) {
+    ...assignment
+}

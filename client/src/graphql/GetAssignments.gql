@@ -1,0 +1,7 @@
+#import "./AssignmentFragment.gql"
+
+query GetAssignments {
+  assignments {
+    ...assignment
+  }
+}
