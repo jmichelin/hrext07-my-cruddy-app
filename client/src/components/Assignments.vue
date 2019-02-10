@@ -7,9 +7,13 @@
       <template slot-scope="{ result: { data, loading } }">
         <!-- Some content -->
         <div v-if="loading">Loading...</div>
-        <ul v-else>
-          <li v-for="assignment of data.assignments" :key="assignment._id">{{ assignment.name }}</li>
-        </ul>
+        <v-sheet v-else class="pa-5" color="grey lighten-3">
+          <ul class="assignments__list">
+            <li v-for="assignment of data.assignments" :key="assignment._id">
+              <v-sheet :elevation="6" class="mx-auto mb-2 pa-2">{{ assignment.name }}</v-sheet>
+            </li>
+          </ul>
+        </v-sheet>
       </template>
     </ApolloQuery>
   </div>
@@ -23,10 +27,48 @@ export default {
   data() {
     return {
       name: "Ben",
+      elevations: [6, 12, 18],
     };
   },
 };
+
+/*
+<div>
+    <v-alert
+      :value="true"
+      type="success"
+    >
+      This is a success alert.
+    </v-alert>
+
+    <v-alert
+      :value="true"
+      type="info"
+    >
+      This is a info alert.
+    </v-alert>
+
+    <v-alert
+      :value="true"
+      type="warning"
+    >
+      This is a warning alert.
+    </v-alert>
+
+    <v-alert
+      :value="true"
+      type="error"
+    >
+      This is a error alert.
+    </v-alert>
+  </div>
+*/
 </script>
 
-<style>
+<style lang="scss" scoped>
+.assignments__list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
 </style>

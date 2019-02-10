@@ -1,6 +1,18 @@
-const { gql, UserInputError } = require("apollo-server");
+const { gql, PubSub, withFilter } = require("apollo-server");
 
-const AssignmentModel = require("../models/assignment-model");
+const {
+  singleAssignment,
+  listAssignment,
+  addAssignment,
+  updateAssignment,
+  removeAssignment,
+} = require("../controllers/assignmentController");
+
+const pubsub = new PubSub();
+
+const ADDED = "ADDED";
+const REMOVED = "REMOVED";
+const UPDATED = "UPDATED";
 
 exports.typeDefs = gql`
   interface MutationResponse {
@@ -26,7 +38,22 @@ exports.typeDefs = gql`
     "The due date for the assignment."
     due: String!
     "Relevant tags associated with an assignment."
-    tags: [String!]!
+    tags: [String!]
+    "A boolean regarding whether the assignment has been completed."
+    completed: Boolean
+  }
+
+  input UpdateAssignment {
+    "A MongoDB-generated ID string."
+    _id: ID!
+    "The main assignment name or title."
+    name: String!
+    "A short description for the assignment, including relevant todos or information."
+    description: String
+    "The due date for the assignment."
+    due: String!
+    "Relevant tags associated with an assignment."
+    tags: [String!]
     "A boolean regarding whether the assignment has been completed."
     completed: Boolean
   }
@@ -37,114 +64,66 @@ exports.typeDefs = gql`
     "A short description for the assignment, including relevant todos or information."
     description: String
     "Relevant tags associated with an assignment."
-    tags: [String!]!
+    tags: [String!]
     "The due date for the assignment."
     due: String!
   }
 
+  type Subscription {
+    assignmentAdded: Assignment
+    assignmentUpdated: Assignment
+    assignmentRemoved: Assignment
+  }
+
   type Mutation {
     add(assignment: NewAssignment!): UpdateMutationResponse!
-    update(assignment: NewAssignment!): UpdateMutationResponse!
+    update(assignment: UpdateAssignment!): UpdateMutationResponse!
     remove(id: ID!): UpdateMutationResponse!
   }
 
   type Query {
     assignment(id: ID): Assignment
-    assignments: [Assignment!]!
+    assignments: [Assignment]
   }
 `;
 
-const failedUpdate = {
-  code: 500,
-  success: false,
-  message: "Operation was unsuccessful. Please try again.",
-  assignment: null,
-};
-
 exports.resolvers = {
   Query: {
-    async assignment(root, { id }) {
-      if (!id) {
-        throw new UserInputError("Please submit assignment ID");
-      }
-      try {
-        const res = await AssignmentModel.findById(id);
-        return res;
-      } catch (e) {
-        return {};
-      }
+    async assignment(root, args) {
+      return singleAssignment(args);
     },
     async assignments() {
-      try {
-        const res = await AssignmentModel.find({});
-        return res;
-      } catch (e) {
-        return [];
-      }
+      return listAssignment();
+    },
+  },
+  Subscription: {
+    assignmentAdded: {
+      subscribe: () => pubsub.asyncIterator([ADDED]),
+    },
+    assignmentUpdated: {
+      subscribe: withFilter(
+        () => pubsub.asyncIterator([UPDATED]),
+        (payload, variables) => payload.assignmentUpdated._id === variables.id
+      ),
+      // subscribe: () => pubsub.asyncIterator([UPDATED]),
+    },
+    assignmentRemoved: {
+      subscribe: () => pubsub.asyncIterator([REMOVED]),
     },
   },
   Mutation: {
-    async add(root, { assignment }) {
-      if (!assignment) {
-        throw new UserInputError("Please submit assignment");
-      }
-      try {
-        const newAssignment = {
-          ...assignment,
-          completed: false,
-        };
-
-        const model = new AssignmentModel(newAssignment);
-        return model
-          .save()
-          .then(res => ({
-            code: 201,
-            success: true,
-            message: "User added successfully",
-            assignment: res,
-          }))
-          .catch(() => failedUpdate);
-      } catch (e) {
-        return failedUpdate;
-      }
+    async add(root, args) {
+      const assignments = addAssignment(args);
+      pubsub.publish(ADDED, { assignmentAdded: args });
+      return assignments;
     },
-    async update(root, { assignment }) {
-      if (!assignment) {
-        throw new UserInputError("Please submit assignment");
-      }
-
-      try {
-        const { id, ...rest } = assignment;
-        const res = await AssignmentModel.findByIdAndUpdate(id, rest, {
-          new: true,
-          upsert: false,
-        });
-        return {
-          code: 201,
-          success: true,
-          message: "User updated successfully",
-          assignment: res,
-        };
-      } catch (e) {
-        return failedUpdate;
-      }
+    async update(root, args) {
+      pubsub.publish(UPDATED, { assignmentUpdated: args });
+      return updateAssignment(args);
     },
-    async remove(root, { id }) {
-      if (!id) {
-        throw new UserInputError("Please provide valid ID");
-      }
-
-      try {
-        const assignment = await AssignmentModel.findByIdAndDelete(id);
-        return {
-          code: 201,
-          success: true,
-          message: "User removed successfully",
-          assignment,
-        };
-      } catch (e) {
-        return failedUpdate;
-      }
+    async remove(root, args) {
+      pubsub.publish(REMOVED, { assignmentRemoved: args });
+      return removeAssignment(args);
     },
   },
 };

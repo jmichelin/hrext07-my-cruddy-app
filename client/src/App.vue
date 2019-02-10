@@ -23,29 +23,7 @@
         </v-list-tile>
       </v-list>
     </v-navigation-drawer>
-    <v-toolbar dark color="primary">
-      <v-toolbar-side-icon @click="toggleSidebar"></v-toolbar-side-icon>
-
-      <v-toolbar-title class="white--text">Title</v-toolbar-title>
-
-      <v-spacer></v-spacer>
-
-      <v-btn icon>
-        <v-icon>search</v-icon>
-      </v-btn>
-
-      <v-btn icon>
-        <v-icon>apps</v-icon>
-      </v-btn>
-
-      <v-btn icon>
-        <v-icon>refresh</v-icon>
-      </v-btn>
-
-      <v-btn icon>
-        <v-icon>more_vert</v-icon>
-      </v-btn>
-    </v-toolbar>
+    <Navbar/>
     <v-content>
       <router-view></router-view>
     </v-content>
@@ -53,9 +31,12 @@
 </template>
 
 <script>
+import Navbar from "./components/Navbar.vue";
 export default {
   name: "App",
-  components: {},
+  components: {
+    Navbar,
+  },
   data() {
     return {
       sidebar: false,

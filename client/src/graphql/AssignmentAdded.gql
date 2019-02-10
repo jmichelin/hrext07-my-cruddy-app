@@ -1,0 +1,7 @@
+#import "./AssignmentFragment.gql"
+
+subscription assignmentAdded {
+  assignmentAdded {
+    ...assignment
+  }
+}
