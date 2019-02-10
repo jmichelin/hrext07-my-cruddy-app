@@ -3,6 +3,10 @@
     <h1>Assignments</h1>
     <!-- Apollo Query -->
     <ApolloQuery :query="require('@/graphql/GetAssignments.gql')">
+      <ApolloSubscribeToMore
+        :document="require('../graphql/AssignmentAdded.gql')"
+        :update-query="assignmentAdded"
+      />
       <!-- The result will automatically updated -->
       <template slot-scope="{ result: { data, loading } }">
         <!-- Some content -->
@@ -16,14 +20,19 @@
         </v-sheet>
       </template>
     </ApolloQuery>
+    <Assignment/>
   </div>
 </template>
 
 <script>
 import axios from "axios";
 import ASSIGNMENTS from "../graphql/GetAssignments.gql";
+import Assignment from "./Assignment.vue";
 
 export default {
+  components: {
+    Assignment,
+  },
   data() {
     return {
       name: "Ben",

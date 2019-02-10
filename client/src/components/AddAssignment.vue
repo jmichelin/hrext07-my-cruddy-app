@@ -21,23 +21,11 @@
         <v-container>
           <v-layout>
             <v-flex xs12 md4>
-              <v-text-field
-                v-model="name"
-                :rules="nameRules"
-                :counter="10"
-                label="Assignment Name"
-                required
-              ></v-text-field>
+              <v-text-field v-model="name" label="Assignment Name" required></v-text-field>
             </v-flex>
 
             <v-flex xs12 md4>
-              <v-text-field
-                v-model="description"
-                :rules="nameRules"
-                :counter="10"
-                label="Description"
-                required
-              ></v-text-field>
+              <v-text-field v-model="description" label="Description" required></v-text-field>
             </v-flex>
 
             <v-text-field
