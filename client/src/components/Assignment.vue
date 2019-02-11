@@ -1,37 +1,34 @@
 <template>
   <v-sheet class="mx-auto mb-2 py-2 px-4" v-bind:style="{ borderLeft: '3px solid ' + activeColor }">
-    <v-container fluid grid-list-md>
-      <v-layout align-center justify-start fill-height row>
-        <v-flex xs-1 sm-1 md-1 lg-2 xl-2 shrink class="checkbox">
-          <v-checkbox
-            v-model="assignment.completed"
-            @click.native.prevent="checkAction(assignment)"
-          ></v-checkbox>
-        </v-flex>
-        <v-flex xs-6 sm-6 md-6 lg-4 xl-4>
-          <div>
-            <h4>{{assignment.name}}</h4>
-            <span class="due">{{date}}</span>
-          </div>
-        </v-flex>
-        <v-flex xs-4 sm-4 md-4 lg-4 xl-4 shrink text-xs-center>
-          <v-chip
-            v-for="tag in assignment.tags"
-            :key="tag"
-            :data-tag="tag"
-            class="chip"
-            @input="removeTag(tag, assignment)"
-            outline
-            close
-          >{{tag}}</v-chip>
-        </v-flex>
-        <v-flex xs-1 sm-1 md-1 lg-2 xl-2 shrink class="flexer">
-          <v-btn fab dark small color="cyan">
-            <v-icon dark>edit</v-icon>
-          </v-btn>
-        </v-flex>
-      </v-layout>
-    </v-container>
+    <!-- <v-container fluid grid-list-lg> -->
+    <v-layout align-center justify-start fill-height row>
+      <v-flex xs1 sm1 md1 lg1 xl1>
+        <v-checkbox v-model="assignment.completed" @click.native.prevent="checkAction(assignment)"></v-checkbox>
+      </v-flex>
+      <v-flex xs6 sm6 md6 lg6 xl6>
+        <div>
+          <h4>{{assignment.name}}</h4>
+          <span class="due">{{date}}</span>
+        </div>
+      </v-flex>
+      <v-flex xs4 sm4 md4 lg4 xl4 shrink text-xs-center>
+        <v-chip
+          v-for="tag in assignment.tags"
+          :key="tag"
+          :data-tag="tag"
+          class="chip"
+          @input="removeTag(tag, assignment)"
+          outline
+          close
+        >{{tag}}</v-chip>
+      </v-flex>
+      <v-flex xs1 sm1 md1 lg1 xl1 text-xs-center>
+        <v-btn fab dark small color="cyan">
+          <v-icon dark>edit</v-icon>
+        </v-btn>
+      </v-flex>
+    </v-layout>
+    <!-- </v-container> -->
   </v-sheet>
 </template>
 
@@ -142,20 +139,14 @@ export default {
 
 <style lang="scss" scoped>
 .checkbox {
-  flex: auto;
   border: 1px solid red;
 }
 .flexer {
   border: 1px solid black;
 }
 
-.checkbox {
-  width: 20px;
-  border: 1px solid red;
-}
-
 .main {
-  flex: 1;
+  border: 1px solid blue;
 }
 </style>
 
