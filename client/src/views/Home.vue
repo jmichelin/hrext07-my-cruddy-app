@@ -1,6 +1,5 @@
 <template>
   <div class="ma-4">
-    <!-- <Test listFilter="SHOW_ALL"/> -->
     <Assignments/>
     <AddAssignment/>
   </div>
@@ -17,6 +16,3 @@ export default {
   },
 };
 </script>
-
-<style>
-</style>
