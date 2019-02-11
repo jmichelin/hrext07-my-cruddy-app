@@ -9,6 +9,7 @@
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
+    "apollo-boost": "^0.1.27",
     "axios": "^0.18.0",
     "vue": "^2.5.22",
     "vue-apollo": "^3.0.0-beta.11",
@@ -36,6 +37,5 @@
     "vue-cli-plugin-vuetify": "^0.4.6",
     "vue-template-compiler": "^2.5.21",
     "vuetify-loader": "^1.0.5"
-  },
-  "proxy": "http://localhost:5000"
+  }
 }

@@ -43,6 +43,21 @@ exports.typeDefs = gql`
     completed: Boolean
   }
 
+  input InputAssignment {
+    "A MongoDB-generated ID string."
+    _id: ID!
+    "The main assignment name or title."
+    name: String!
+    "A short description for the assignment, including relevant todos or information."
+    description: String
+    "The due date for the assignment."
+    due: String!
+    "Relevant tags associated with an assignment."
+    tags: [String!]
+    "A boolean regarding whether the assignment has been completed."
+    completed: Boolean
+  }
+
   input UpdateAssignment {
     "A MongoDB-generated ID string."
     _id: ID!

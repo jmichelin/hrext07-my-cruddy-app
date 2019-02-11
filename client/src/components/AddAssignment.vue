@@ -1,45 +1,52 @@
 <template>
   <ApolloMutation
-    :mutation="require('../graphql/AddAssignment.gql')"
+    :mutation="require('@/graphql/AddAssignment.gql')"
     :variables="{
-        assignment: {
-          name: name,
-          description: description,
-          due: due,
-          tags: tags
-        },
+        assignment: { name, description, due, tags: tagsArray }
       }"
     class="form"
     @done="clearForm"
   >
     <template slot-scope="{ mutate }">
-      <!-- <form v-on:submit.prevent="formValid && mutate()">
-        <label for="field-message">Message</label>
-        <input id="field-message" v-model="newMessage" placeholder="Type a message" class="input">
-      </form>-->
-      <v-form v-model="valid" v-on:submit.prevent="formValid && mutate()">
+      <v-form v-on:submit.prevent="mutate()">
         <v-container>
-          <v-layout>
-            <v-flex xs12 md4>
+          <v-layout column>
+            <v-flex>
               <v-text-field v-model="name" label="Assignment Name" required></v-text-field>
             </v-flex>
 
-            <v-flex xs12 md4>
-              <v-text-field v-model="description" label="Description" required></v-text-field>
+            <v-flex>
+              <v-text-field v-model="description" label="Description"></v-text-field>
             </v-flex>
 
-            <v-text-field
-              slot="activator"
-              v-model="due"
-              label="Assignment Due"
-              prepend-icon="event"
-              readonly
-            ></v-text-field>
-            <v-date-picker v-model="due" no-title scrollable>
-              <v-spacer></v-spacer>
-              <v-btn flat color="primary" @click="menu = false">Cancel</v-btn>
-              <v-btn flat color="primary" @click="$refs.menu.save(date)">OK</v-btn>
-            </v-date-picker>
+            <v-flex>
+              <v-text-field v-model="tags" label="Tags"></v-text-field>
+            </v-flex>
+
+            <v-flex>
+              <v-menu
+                v-model="menu"
+                :close-on-content-click="false"
+                :nudge-right="40"
+                lazy
+                transition="scale-transition"
+                offset-y
+                full-width
+                min-width="290px"
+              >
+                <v-text-field
+                  slot="activator"
+                  v-model="due"
+                  label="Picker without buttons"
+                  prepend-icon="event"
+                  readonly
+                ></v-text-field>
+                <v-date-picker v-model="due" @input="menu = false"></v-date-picker>
+              </v-menu>
+            </v-flex>
+            <v-flex>
+              <v-btn type="submit">Submit</v-btn>
+            </v-flex>
           </v-layout>
         </v-container>
       </v-form>
@@ -51,18 +58,31 @@
 export default {
   data() {
     return {
+      menu: false,
+      modal: false,
       name: "",
       description: "",
-      due: "",
-      tags: [],
+      due: new Date().toISOString().substr(0, 10),
+      tags: "",
     };
+  },
+  computed: {
+    tagsArray() {
+      return this.tags.split(",").map(i => i.trim());
+    },
   },
   methods: {
     clearForm() {
       this.name = "";
       this.description = "";
-      this.due = "";
-      this.tags = [];
+      this.due = new Date().toISOString().substr(0, 10);
+      this.tags = "";
+    },
+    logVals() {
+      console.log(`NAME: ${this.name}`);
+      console.log(`DUE: ${this.due}`);
+      console.log(`DESCRIPTION: ${this.description}`);
+      console.log(`TAGS:`, this.tagsArray);
     },
   },
 };

@@ -3,7 +3,7 @@
 
 mutation AddAssignment($assignment: NewAssignment!) {
   add(assignment: $assignment) {
-    ...response
+    ...mutationResponse
     assignment {
       ...assignment
     }

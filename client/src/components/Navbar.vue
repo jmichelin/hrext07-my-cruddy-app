@@ -1,8 +1,8 @@
 <template>
-  <v-toolbar class="deep-purple">
-    <v-toolbar-side-icon class="white--text" @click="toggleSidebar"></v-toolbar-side-icon>
+  <v-toolbar>
+    <v-toolbar-side-icon @click="$emit('toggle')"></v-toolbar-side-icon>
 
-    <v-toolbar-title class="white--text display-1">
+    <v-toolbar-title class="display-1">
       <span class="font-weight-light">Assignment</span>
       <span class="font-weight-regular">Tracker</span>
     </v-toolbar-title>

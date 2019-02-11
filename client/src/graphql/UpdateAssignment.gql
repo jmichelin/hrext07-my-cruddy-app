@@ -1,9 +1,9 @@
 #import "./ResponseFragment.gql"
 #import "./AssignmentFragment.gql"
 
-mutation UpdateAssignment($assignment: Assignment!) {
+mutation UpdateAssignment($assignment: UpdateAssignment!) {
   update(assignment: $assignment) {
-    ...response
+    ...mutationResponse
     assignment {
       ...assignment
     }

@@ -3,10 +3,10 @@
     <h1>Assignments</h1>
     <!-- Apollo Query -->
     <ApolloQuery :query="require('@/graphql/GetAssignments.gql')">
-      <ApolloSubscribeToMore
+      <!-- <ApolloSubscribeToMore
         :document="require('../graphql/AssignmentAdded.gql')"
         :update-query="assignmentAdded"
-      />
+      />-->
       <!-- The result will automatically updated -->
       <template slot-scope="{ result: { data, loading } }">
         <!-- Some content -->
@@ -14,7 +14,8 @@
         <v-sheet v-else class="pa-5" color="grey lighten-3">
           <ul class="assignments__list">
             <li v-for="assignment of data.assignments" :key="assignment._id">
-              <v-sheet :elevation="6" class="mx-auto mb-2 pa-2">{{ assignment.name }}</v-sheet>
+              <!-- <v-sheet :elevation="6" class="mx-auto mb-2 pa-2">{{ assignment.name }}</v-sheet> -->
+              <Assignment :assignment="assignment"/>
             </li>
           </ul>
         </v-sheet>

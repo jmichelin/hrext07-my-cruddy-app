@@ -1,34 +1,208 @@
 <template>
-  <v-sheet class="mx-auto py-2 px-4" v-bind:style="{ borderLeft: '3px solid ' + activeColor }">
-    <v-layout align-center justify-start fill-height row>
-      <v-flex auto>
-        <v-checkbox @click.native.prevent="checkAction"></v-checkbox>
-      </v-flex>
-      <v-flex>
-        <div>
-          <h4>Final Assignment</h4>
-          <span class="due">Wed, Feb. 15th</span>
-        </div>
-      </v-flex>
-    </v-layout>
+  <v-sheet class="mx-auto mb-2 py-2 px-4" v-bind:style="{ borderLeft: '3px solid ' + activeColor }">
+    <v-container fluid grid-list-md>
+      <v-layout align-center justify-start fill-height row>
+        <v-flex xs-1 sm-1 md-1 lg-2 xl-2 shrink class="checkbox">
+          <v-checkbox
+            v-model="assignment.completed"
+            @click.native.prevent="checkAction(assignment)"
+          ></v-checkbox>
+        </v-flex>
+        <v-flex xs-6 sm-6 md-6 lg-4 xl-4>
+          <div>
+            <h4>{{assignment.name}}</h4>
+            <span class="due">{{date}}</span>
+          </div>
+        </v-flex>
+        <v-flex xs-4 sm-4 md-4 lg-4 xl-4 shrink text-xs-center>
+          <v-chip
+            v-for="tag in assignment.tags"
+            :key="tag"
+            :data-tag="tag"
+            class="chip"
+            @input="removeTag(tag, assignment)"
+            outline
+            close
+          >{{tag}}</v-chip>
+        </v-flex>
+        <v-flex xs-1 sm-1 md-1 lg-2 xl-2 shrink class="flexer">
+          <v-btn fab dark small color="cyan">
+            <v-icon dark>edit</v-icon>
+          </v-btn>
+        </v-flex>
+      </v-layout>
+    </v-container>
   </v-sheet>
 </template>
 
 <script>
+import { gql } from "apollo-boost";
+
+import formatDate from "@/helpers/DateFormat.js";
+import UpdateAssignment from "@/graphql/UpdateAssignment.gql";
+
 export default {
+  props: {
+    assignment: {
+      type: Object,
+    },
+  },
   data() {
     return {
       activeColor: "red",
       completed: false,
+      chip1: true,
+      chip2: true,
+      chip3: true,
+      chip4: true,
     };
   },
+  computed: {
+    date() {
+      const dueDate = new Date(parseInt(this.assignment.due, 10));
+      return formatDate("[mth] [date], [yyyy]", dueDate);
+    },
+  },
   methods: {
-    checkAction(e) {
-      console.log("CHECKED");
+    checkAction(assignment) {
+      const newAssignment = {
+        ...assignment,
+        completed: !assignment.completed,
+      };
+
+      const { __typename, ...newA } = newAssignment;
+
+      this.$apollo
+        .mutate({
+          mutation: UpdateAssignment,
+          variables: {
+            assignment: newA,
+          },
+        })
+        .then(data => {
+          console.log(data);
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    },
+    removeTag(tag, assignment) {
+      const newAssignment = {
+        ...assignment,
+        tags: assignment.tags.filter(t => t !== tag),
+      };
+
+      const { __typename, ...newA } = newAssignment;
+
+      this.$apollo
+        .mutate({
+          // Query
+          mutation: UpdateAssignment,
+          // Parameters
+          variables: {
+            assignment: newA,
+          },
+          // // Update the cache with the result
+          // // The query will be updated with the optimistic response
+          // // and then with the real result of the mutation
+          // update: (store, { data: { addTag } }) => {
+          //   // Read the data from our cache for this query.
+          //   const data = store.readQuery({ query: TAGS_QUERY });
+          //   // Add our tag from the mutation to the end
+          //   data.tags.push(addTag);
+          //   // Write our data back to the cache.
+          //   store.writeQuery({ query: TAGS_QUERY, data });
+          // },
+          // // Optimistic UI
+          // // Will be treated as a 'fake' result as soon as the request is made
+          // // so that the UI can react quickly and the user be happy
+          // optimisticResponse: {
+          //   __typename: "Mutation",
+          //   addTag: {
+          //     __typename: "Tag",
+          //     id: -1,
+          //     label: newTag,
+          //   },
+          // },
+        })
+        .then(data => {
+          // Result
+          console.log(data);
+        })
+        .catch(error => {
+          // Error
+          console.error(error);
+          // We restore the initial user input
+          // this.newTag = newTag;
+        });
     },
   },
 };
 </script>
 
-<style>
+<style lang="scss" scoped>
+.checkbox {
+  flex: auto;
+  border: 1px solid red;
+}
+.flexer {
+  border: 1px solid black;
+}
+
+.checkbox {
+  width: 20px;
+  border: 1px solid red;
+}
+
+.main {
+  flex: 1;
+}
 </style>
+
+<!-- 
+.container {
+  display: grid;
+  width: 100%;
+  grid-template-columns: 30px 1fr 1fr 30px;
+  grid-gap: 2em;
+  font-size: 0.8em;
+}
+
+.flexer {
+  border: 1px solid black;
+}
+
+.checkbox {
+  width: 20px;
+  border: 1px solid red;
+}
+
+<div class="container">
+      <div class="checkbox">
+        <v-checkbox v-model="assignment.completed" @click.native.prevent="checkAction(assignment)"></v-checkbox>
+      </div>
+      <div class="title">
+        <h4>{{assignment.name}}</h4>
+        <span class="due">{{date}}</span>
+      </div>
+      <div class="tags">
+        <div class="text-xs-center">
+          <v-chip
+            v-for="tag in assignment.tags"
+            :key="tag"
+            :data-tag="tag"
+            class="chip"
+            @input="removeTag(tag, assignment)"
+            outline
+            close
+          >{{tag}}</v-chip>
+        </div>
+      </div>
+      <div class="edit">
+        <v-btn fab dark small color="cyan">
+          <v-icon dark>edit</v-icon>
+        </v-btn>
+      </div>
+    </div>
+
+-->

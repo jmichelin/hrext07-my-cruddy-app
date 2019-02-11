@@ -23,7 +23,7 @@
         </v-list-tile>
       </v-list>
     </v-navigation-drawer>
-    <Navbar/>
+    <Navbar @toggle="toggleSidebar"/>
     <v-content>
       <router-view></router-view>
     </v-content>
@@ -31,7 +31,10 @@
 </template>
 
 <script>
+import { mapActions } from "vuex";
+
 import Navbar from "./components/Navbar.vue";
+
 export default {
   name: "App",
   components: {
@@ -50,6 +53,7 @@ export default {
     toggleSidebar() {
       this.sidebar = !this.sidebar;
     },
+    ...mapActions(["loadAssignments"]),
   },
 };
 </script>
