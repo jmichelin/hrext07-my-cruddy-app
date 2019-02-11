@@ -28,25 +28,7 @@
             >{{tag}}</v-chip>
           </v-flex>
           <v-flex xs1 sm1 md1 lg1 xl1 text-xs-center>
-            <v-dialog v-model="dialog" persistent max-width="600px">
-              <v-btn fab dark small color="cyan" slot="activator">
-                <v-icon dark>edit</v-icon>
-              </v-btn>
-              <v-card>
-                <v-card-title>
-                  <span class="headline">Edit Assignment</span>
-                </v-card-title>
-                <v-card-text>
-                  <Update :assignment="assignment"/>
-                  <small>*indicates required field</small>
-                </v-card-text>
-                <v-card-actions>
-                  <v-spacer></v-spacer>
-                  <v-btn color="blue darken-1" flat @click="dialog = false">Close</v-btn>
-                  <v-btn color="blue darken-1" flat @click="dialog = false">Save</v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
+            <Update :assignment="assignment"/>
           </v-flex>
         </v-layout>
         <!-- </v-container> -->
