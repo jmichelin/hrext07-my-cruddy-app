@@ -1,44 +1,75 @@
 <template>
   <v-sheet class="mx-auto mb-2 py-2 px-4" v-bind:style="{ borderLeft: '3px solid ' + activeColor }">
     <!-- <v-container fluid grid-list-lg> -->
-    <v-layout align-center justify-start fill-height row>
-      <v-flex xs1 sm1 md1 lg1 xl1>
-        <v-checkbox v-model="assignment.completed" @click.native.prevent="checkAction(assignment)"></v-checkbox>
-      </v-flex>
-      <v-flex xs6 sm6 md6 lg6 xl6>
-        <div>
-          <h4>{{assignment.name}}</h4>
-          <span class="due">{{date}}</span>
-        </div>
-      </v-flex>
-      <v-flex xs4 sm4 md4 lg4 xl4 shrink text-xs-center>
-        <v-chip
-          v-for="tag in assignment.tags"
-          :key="tag"
-          :data-tag="tag"
-          class="chip"
-          @input="removeTag(tag, assignment)"
-          outline
-          close
-        >{{tag}}</v-chip>
-      </v-flex>
-      <v-flex xs1 sm1 md1 lg1 xl1 text-xs-center>
-        <v-btn fab dark small color="cyan">
-          <v-icon dark>edit</v-icon>
-        </v-btn>
-      </v-flex>
-    </v-layout>
-    <!-- </v-container> -->
+    <v-expansion-panel>
+      <v-expansion-panel-content>
+        <v-layout align-center justify-start fill-height row slot="header">
+          <v-flex xs1 sm1 md1 lg1 xl1>
+            <v-checkbox
+              v-model="assignment.completed"
+              @click.native.prevent="checkAction(assignment)"
+            ></v-checkbox>
+          </v-flex>
+          <v-flex xs6 sm6 md6 lg6 xl6>
+            <div :class="assignment.completed ? 'completed' : ''">
+              <h4>{{assignment.name}}</h4>
+              <span class="due">{{date}}</span>
+            </div>
+          </v-flex>
+          <v-flex xs4 sm4 md4 lg4 xl4 shrink text-xs-center>
+            <v-chip
+              v-for="tag in assignment.tags"
+              :key="tag"
+              :data-tag="tag"
+              class="chip"
+              @input="removeTag(tag, assignment)"
+              outline
+              close
+            >{{tag}}</v-chip>
+          </v-flex>
+          <v-flex xs1 sm1 md1 lg1 xl1 text-xs-center>
+            <v-dialog v-model="dialog" persistent max-width="600px">
+              <v-btn fab dark small color="cyan" slot="activator">
+                <v-icon dark>edit</v-icon>
+              </v-btn>
+              <v-card>
+                <v-card-title>
+                  <span class="headline">Edit Assignment</span>
+                </v-card-title>
+                <v-card-text>
+                  <Update :assignment="assignment"/>
+                  <small>*indicates required field</small>
+                </v-card-text>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn color="blue darken-1" flat @click="dialog = false">Close</v-btn>
+                  <v-btn color="blue darken-1" flat @click="dialog = false">Save</v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
+          </v-flex>
+        </v-layout>
+        <!-- </v-container> -->
+        <v-card>
+          <v-card-text>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</v-card-text>
+        </v-card>
+      </v-expansion-panel-content>
+    </v-expansion-panel>
   </v-sheet>
 </template>
 
 <script>
 import { gql } from "apollo-boost";
 
+import Update from "@/components/Update.vue";
+
 import formatDate from "@/helpers/DateFormat.js";
 import UpdateAssignment from "@/graphql/UpdateAssignment.gql";
 
 export default {
+  components: {
+    Update,
+  },
   props: {
     assignment: {
       type: Object,
@@ -48,10 +79,7 @@ export default {
     return {
       activeColor: "red",
       completed: false,
-      chip1: true,
-      chip2: true,
-      chip3: true,
-      chip4: true,
+      dialog: false,
     };
   },
   computed: {
@@ -62,13 +90,12 @@ export default {
   },
   methods: {
     checkAction(assignment) {
-      const newAssignment = {
-        ...assignment,
-        completed: !assignment.completed,
-      };
+      // const newAssignment = {
+      //   ...assignment,
+      //   completed: !assignment.completed,
+      // };
 
-      const { __typename, ...newA } = newAssignment;
-
+      const { __typename, ...newA } = assignment;
       this.$apollo
         .mutate({
           mutation: UpdateAssignment,
@@ -147,6 +174,10 @@ export default {
 
 .main {
   border: 1px solid blue;
+}
+
+.completed {
+  color: red;
 }
 </style>
 

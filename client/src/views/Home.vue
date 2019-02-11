@@ -1,5 +1,5 @@
 <template>
-  <div class="ma-4">
+  <div class="ma-2">
     <Assignments/>
     <AddAssignment/>
   </div>
@@ -16,3 +16,6 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+</style>

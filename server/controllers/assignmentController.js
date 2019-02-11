@@ -52,12 +52,12 @@ exports.addAssignment = async ({ assignment }) => {
 };
 
 exports.updateAssignment = async ({ assignment }) => {
-  const validationErrors = validate(assignment);
-  if (validationErrors) {
-    throw new UserInputError("Assignment object is incomplete or missing.", {
-      validationErrors,
-    });
-  }
+  // const validationErrors = validate(assignment);
+  // if (validationErrors) {
+  //   throw new UserInputError("Assignment object is incomplete or missing.", {
+  //     validationErrors,
+  //   });
+  // }
 
   try {
     const { _id, ...rest } = assignment;
