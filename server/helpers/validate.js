@@ -11,14 +11,15 @@ const validate = assignment => {
 
     if (!assignment.due) {
       validationErrors.assignmentDue = "Assignment due date missing.";
-    } else {
-      const date = isNaN(parseInt(assignment.due, 10))
-        ? assignment.due
-        : parseInt(assignment.due, 10);
-      if (Date.now() - new Date(date) > 0) {
-        validationErrors.assignmentDue = "Assignment date is in the past.";
-      }
     }
+    // else {
+    //   const date = isNaN(parseInt(assignment.due, 10))
+    //     ? assignment.due
+    //     : parseInt(assignment.due, 10);
+    //   if (Date.now() - new Date(date) > 0) {
+    //     validationErrors.assignmentDue = "Assignment date is in the past.";
+    //   }
+    // }
   }
 
   return Object.keys(validationErrors).length > 0 ? validationErrors : null;
