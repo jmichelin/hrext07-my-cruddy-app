@@ -6,17 +6,6 @@
       :class="[assignment.completed ? 'completed' : '', `elevation-${hover ? 2 : 0}`]"
       slot-scope="{ hover }"
     >
-      <!-- <v-container fluid grid-list-lg> -->
-      <!-- <v-expansion-panel>
-      <v-expansion-panel-content>-->
-      <v-snackbar
-        v-model="assignmentCompleted"
-        color="success"
-        :timeout="timeout"
-        :top="top"
-      >Congrats! You have completed the assignment.
-        <v-btn color="white" flat @click="snackbar = false">Close</v-btn>
-      </v-snackbar>
       <v-snackbar
         v-model="errorMessage"
         color="error"
@@ -27,47 +16,57 @@
       </v-snackbar>
       <v-layout align-center justify-start fill-height row>
         <v-flex xs1 sm1 md1 lg1 xl1>
-          <v-checkbox
-            v-model="assignment.completed"
-            @click.native.prevent="checkAction(assignment)"
-          ></v-checkbox>
+          <v-checkbox v-model="completed" @click.native.prevent="checkAction(assignment)"></v-checkbox>
         </v-flex>
-        <v-flex xs6 sm6 md6 lg6 xl6>
-          <div :class="assignment.completed ? 'completed__text' : ''">
-            <h4>{{assignment.name}}</h4>
-            <span class="due">{{date}}</span>
-          </div>
-        </v-flex>
-        <v-flex xs4 sm4 md4 lg4 xl4 shrink text-xs-center>
-          <v-chip
-            v-for="tag in assignment.tags"
-            :key="tag"
-            :data-tag="tag"
-            class="chip"
-            @input="removeTag(tag, assignment)"
-            outline
-            close
-          >{{tag}}</v-chip>
-        </v-flex>
-        <v-flex xs1 sm1 md1 lg1 xl1 text-xs-center>
-          <v-layout row>
-            <v-flex>
-              <Update :assignment="assignment" @update="emitUpdate"/>
-            </v-flex>
-            <v-flex>
-              <v-btn outline fab small color="red" @click="deleteAssignment(assignment._id)">
-                <v-icon>delete</v-icon>
-              </v-btn>
-            </v-flex>
-          </v-layout>
+        <v-flex xs11 sm11 md11 lg11 xl11>
+          <v-expansion-panel>
+            <v-expansion-panel-content expand-icon>
+              <v-container slot="header" class="expander" fluid grid-list-lg>
+                <v-layout align-center justify-start fill-height row>
+                  <v-flex>
+                    <div :class="assignment.completed ? 'completed__text' : ''">
+                      <h4>{{assignment.name}}</h4>
+                      <span class="due">{{date}}</span>
+                    </div>
+                  </v-flex>
+                  <v-flex xs4 sm4 md4 lg4 xl4 shrink text-xs-center>
+                    <v-chip
+                      v-for="tag in assignment.tags"
+                      :key="tag"
+                      :data-tag="tag"
+                      class="chip"
+                      @input="removeTag(tag, assignment)"
+                      outline
+                      close
+                    >{{tag}}</v-chip>
+                  </v-flex>
+                  <v-flex xs1 sm1 md1 lg1 xl1 text-xs-center>
+                    <v-layout row>
+                      <v-flex>
+                        <Update :assignment="assignment" @update="emitUpdate"/>
+                      </v-flex>
+                      <v-flex>
+                        <v-btn
+                          outline
+                          fab
+                          small
+                          color="red"
+                          @click="deleteAssignment(assignment._id)"
+                        >
+                          <v-icon>delete</v-icon>
+                        </v-btn>
+                      </v-flex>
+                    </v-layout>
+                  </v-flex>
+                </v-layout>
+              </v-container>
+              <v-card>
+                <v-card-text>{{assignment.description}}</v-card-text>
+              </v-card>
+            </v-expansion-panel-content>
+          </v-expansion-panel>
         </v-flex>
       </v-layout>
-      <!-- </v-container> -->
-      <!-- <v-card>
-          <v-card-text>{{assignment.description}}</v-card-text>
-        </v-card>
-      </v-expansion-panel-content>
-      </v-expansion-panel>-->
     </v-sheet>
   </v-hover>
 </template>
@@ -94,11 +93,10 @@ export default {
   data() {
     return {
       activeColor: "red",
-      completed: false,
+      completed: this.assignment.completed,
       dialog: false,
       timeout: 2000,
       top: true,
-      assignmentCompleted: false,
       errorMessage: false,
     };
   },
@@ -115,11 +113,11 @@ export default {
         .mutate({
           mutation: UpdateAssignment,
           variables: {
-            assignment: newA,
+            assignment: { ...newA, completed: this.completed },
           },
         })
         .then(res => {
-          this.assignmentCompleted = res.data.update.assignment.completed;
+          this.$emit("complete", res.data.update.assignment);
         })
         .catch(error => {
           this.errorMessage = true;
@@ -127,7 +125,7 @@ export default {
             function() {
               this.errorMessage = false;
             }.bind(this),
-            5000
+            2000
           );
         });
     },
@@ -155,7 +153,7 @@ export default {
             function() {
               this.errorMessage = false;
             }.bind(this),
-            5000
+            2000
           );
         });
     },
@@ -177,7 +175,7 @@ export default {
             function() {
               this.errorMessage = false;
             }.bind(this),
-            5000
+            2000
           );
         });
     },
@@ -210,5 +208,19 @@ export default {
 }
 .pointer {
   cursor: pointer;
+}
+
+.expander {
+  border: 0px solid black !important;
+}
+
+.v-expansion-panel {
+  border: 0px solid black !important;
+  box-shadow: none !important;
+}
+
+.v-expansion-panel__header__icon {
+  display: none !important;
+  visibility: none !important;
 }
 </style>

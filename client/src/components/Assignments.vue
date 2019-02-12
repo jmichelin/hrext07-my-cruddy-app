@@ -1,18 +1,25 @@
 <template>
   <div>
     <v-snackbar
+      v-model="assignmentRemoved"
+      :timeout="timeout"
+      :top="top"
+    >Assignment has been removed.
+      <v-btn color="white" flat @click="snackbar = false">Close</v-btn>
+    </v-snackbar>
+    <v-snackbar
+      v-model="assignmentCompleted"
+      :timeout="timeout"
+      :top="top"
+    >Congrats! You have completed the assignment.
+      <v-btn color="white" flat @click="snackbar = false">Close</v-btn>
+    </v-snackbar>
+    <v-snackbar
       v-model="errorMessage"
       color="error"
       :timeout="timeout"
       :top="top"
     >Oh, no! Something has gone wrong. Please try again.
-      <v-btn color="white" flat @click="snackbar = false">Close</v-btn>
-    </v-snackbar>
-    <v-snackbar
-      v-model="assignmentRemoved"
-      :timeout="timeout"
-      :top="top"
-    >Assignment has been removed.
       <v-btn color="white" flat @click="snackbar = false">Close</v-btn>
     </v-snackbar>
     <h1>Assignments</h1>
@@ -63,6 +70,7 @@
             :assignment="assignment"
             @delete="removeAssignment"
             @update="updateAssignment"
+            @complete="completeAssignment"
           />
         </li>
       </ul>
@@ -99,6 +107,7 @@ export default {
       elevations: [6, 12, 18],
       errorMessage: false,
       assignmentRemoved: false,
+      assignmentCompleted: false,
       timeout: 2000,
       top: true,
     };
@@ -196,6 +205,17 @@ export default {
     },
     addAssignment(assignment) {
       this.assignments.unshift(assignment);
+    },
+    completeAssignment(assignment) {
+      this.assignmentCompleted = assignment.completed;
+      setTimeout(
+        function() {
+          this.assignmentCompleted = false;
+        }.bind(this),
+        2000
+      );
+
+      this.updateAssignment(assignment);
     },
   },
   mounted() {
