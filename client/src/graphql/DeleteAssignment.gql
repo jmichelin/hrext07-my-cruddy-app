@@ -2,7 +2,7 @@
 
 mutation DeleteAssignment($id: ID!) {
   remove(id: $id) {
-    ...response
+    ...mutationResponse
     assignment {
       _id
     }

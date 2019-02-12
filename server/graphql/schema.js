@@ -118,7 +118,7 @@ exports.resolvers = {
     assignmentUpdated: {
       subscribe: withFilter(
         () => pubsub.asyncIterator([UPDATED]),
-        (payload, variables) => payload.assignmentUpdated._id === variables.id
+        (payload, variables) => payload.assignmentUpdated._id === variables._id
       ),
       // subscribe: () => pubsub.asyncIterator([UPDATED]),
     },

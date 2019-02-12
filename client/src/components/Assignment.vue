@@ -1,43 +1,75 @@
 <template>
-  <v-sheet class="mx-auto mb-2 py-2 px-4" v-bind:style="{ borderLeft: '3px solid ' + activeColor }">
-    <!-- <v-container fluid grid-list-lg> -->
-    <v-expansion-panel>
-      <v-expansion-panel-content>
-        <v-layout align-center justify-start fill-height row slot="header">
-          <v-flex xs1 sm1 md1 lg1 xl1>
-            <v-checkbox
-              v-model="assignment.completed"
-              @click.native.prevent="checkAction(assignment)"
-            ></v-checkbox>
-          </v-flex>
-          <v-flex xs6 sm6 md6 lg6 xl6>
-            <div :class="assignment.completed ? 'completed' : ''">
-              <h4>{{assignment.name}}</h4>
-              <span class="due">{{date}}</span>
-            </div>
-          </v-flex>
-          <v-flex xs4 sm4 md4 lg4 xl4 shrink text-xs-center>
-            <v-chip
-              v-for="tag in assignment.tags"
-              :key="tag"
-              :data-tag="tag"
-              class="chip"
-              @input="removeTag(tag, assignment)"
-              outline
-              close
-            >{{tag}}</v-chip>
-          </v-flex>
-          <v-flex xs1 sm1 md1 lg1 xl1 text-xs-center>
-            <Update :assignment="assignment"/>
-          </v-flex>
-        </v-layout>
-        <!-- </v-container> -->
-        <v-card>
-          <v-card-text>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</v-card-text>
+  <v-hover>
+    <v-sheet
+      class="mx-auto mb-2 py-2 px-4 pointer"
+      :style="{ borderLeft: '3px solid ' + activeColor }"
+      :class="[assignment.completed ? 'completed' : '', `elevation-${hover ? 2 : 0}`]"
+      slot-scope="{ hover }"
+    >
+      <!-- <v-container fluid grid-list-lg> -->
+      <!-- <v-expansion-panel>
+      <v-expansion-panel-content>-->
+      <v-snackbar
+        v-model="assignmentCompleted"
+        color="success"
+        :timeout="timeout"
+        :top="top"
+      >Congrats! You have completed the assignment.
+        <v-btn color="white" flat @click="snackbar = false">Close</v-btn>
+      </v-snackbar>
+      <v-snackbar
+        v-model="errorMessage"
+        color="error"
+        :timeout="timeout"
+        :top="top"
+      >Oh, no! Something has gone wrong. Please try again.
+        <v-btn color="white" flat @click="snackbar = false">Close</v-btn>
+      </v-snackbar>
+      <v-layout align-center justify-start fill-height row>
+        <v-flex xs1 sm1 md1 lg1 xl1>
+          <v-checkbox
+            v-model="assignment.completed"
+            @click.native.prevent="checkAction(assignment)"
+          ></v-checkbox>
+        </v-flex>
+        <v-flex xs6 sm6 md6 lg6 xl6>
+          <div :class="assignment.completed ? 'completed__text' : ''">
+            <h4>{{assignment.name}}</h4>
+            <span class="due">{{date}}</span>
+          </div>
+        </v-flex>
+        <v-flex xs4 sm4 md4 lg4 xl4 shrink text-xs-center>
+          <v-chip
+            v-for="tag in assignment.tags"
+            :key="tag"
+            :data-tag="tag"
+            class="chip"
+            @input="removeTag(tag, assignment)"
+            outline
+            close
+          >{{tag}}</v-chip>
+        </v-flex>
+        <v-flex xs1 sm1 md1 lg1 xl1 text-xs-center>
+          <v-layout row>
+            <v-flex>
+              <Update :assignment="assignment" @update="emitUpdate"/>
+            </v-flex>
+            <v-flex>
+              <v-btn outline fab small color="red" @click="deleteAssignment(assignment._id)">
+                <v-icon>delete</v-icon>
+              </v-btn>
+            </v-flex>
+          </v-layout>
+        </v-flex>
+      </v-layout>
+      <!-- </v-container> -->
+      <!-- <v-card>
+          <v-card-text>{{assignment.description}}</v-card-text>
         </v-card>
       </v-expansion-panel-content>
-    </v-expansion-panel>
-  </v-sheet>
+      </v-expansion-panel>-->
+    </v-sheet>
+  </v-hover>
 </template>
 
 <script>
@@ -47,6 +79,8 @@ import Update from "@/components/Update.vue";
 
 import formatDate from "@/helpers/DateFormat.js";
 import UpdateAssignment from "@/graphql/UpdateAssignment.gql";
+import DeleteAssignment from "../graphql/DeleteAssignment.gql";
+import { setTimeout } from "timers";
 
 export default {
   components: {
@@ -62,6 +96,10 @@ export default {
       activeColor: "red",
       completed: false,
       dialog: false,
+      timeout: 2000,
+      top: true,
+      assignmentCompleted: false,
+      errorMessage: false,
     };
   },
   computed: {
@@ -72,11 +110,6 @@ export default {
   },
   methods: {
     checkAction(assignment) {
-      // const newAssignment = {
-      //   ...assignment,
-      //   completed: !assignment.completed,
-      // };
-
       const { __typename, ...newA } = assignment;
       this.$apollo
         .mutate({
@@ -85,11 +118,17 @@ export default {
             assignment: newA,
           },
         })
-        .then(data => {
-          console.log(data);
+        .then(res => {
+          this.assignmentCompleted = res.data.update.assignment.completed;
         })
         .catch(error => {
-          console.error(error);
+          this.errorMessage = true;
+          setTimeout(
+            function() {
+              this.errorMessage = false;
+            }.bind(this),
+            5000
+          );
         });
     },
     removeTag(tag, assignment) {
@@ -102,45 +141,48 @@ export default {
 
       this.$apollo
         .mutate({
-          // Query
           mutation: UpdateAssignment,
-          // Parameters
           variables: {
             assignment: newA,
           },
-          // // Update the cache with the result
-          // // The query will be updated with the optimistic response
-          // // and then with the real result of the mutation
-          // update: (store, { data: { addTag } }) => {
-          //   // Read the data from our cache for this query.
-          //   const data = store.readQuery({ query: TAGS_QUERY });
-          //   // Add our tag from the mutation to the end
-          //   data.tags.push(addTag);
-          //   // Write our data back to the cache.
-          //   store.writeQuery({ query: TAGS_QUERY, data });
-          // },
-          // // Optimistic UI
-          // // Will be treated as a 'fake' result as soon as the request is made
-          // // so that the UI can react quickly and the user be happy
-          // optimisticResponse: {
-          //   __typename: "Mutation",
-          //   addTag: {
-          //     __typename: "Tag",
-          //     id: -1,
-          //     label: newTag,
-          //   },
-          // },
         })
-        .then(data => {
-          // Result
-          console.log(data);
+        .then(res => {
+          this.$emit("update", res.data.update.assignment);
         })
         .catch(error => {
-          // Error
-          console.error(error);
-          // We restore the initial user input
-          // this.newTag = newTag;
+          this.errorMessage = true;
+          setTimeout(
+            function() {
+              this.errorMessage = false;
+            }.bind(this),
+            5000
+          );
         });
+    },
+    deleteAssignment(id) {
+      this.$apollo
+        .mutate({
+          mutation: DeleteAssignment,
+          variables: {
+            id: id,
+          },
+        })
+        .then(res => {
+          console.log(res);
+          this.$emit("delete", res.data.remove.assignment._id);
+        })
+        .catch(error => {
+          this.errorMessage = true;
+          setTimeout(
+            function() {
+              this.errorMessage = false;
+            }.bind(this),
+            5000
+          );
+        });
+    },
+    emitUpdate(assignment) {
+      this.$emit("update", assignment);
     },
   },
 };
@@ -159,54 +201,14 @@ export default {
 }
 
 .completed {
-  color: red;
+  background-color: #f6f6f6;
+}
+.completed__text {
+  color: #666;
+  text-decoration: line-through;
+  font-style: italic;
+}
+.pointer {
+  cursor: pointer;
 }
 </style>
-
-<!-- 
-.container {
-  display: grid;
-  width: 100%;
-  grid-template-columns: 30px 1fr 1fr 30px;
-  grid-gap: 2em;
-  font-size: 0.8em;
-}
-
-.flexer {
-  border: 1px solid black;
-}
-
-.checkbox {
-  width: 20px;
-  border: 1px solid red;
-}
-
-<div class="container">
-      <div class="checkbox">
-        <v-checkbox v-model="assignment.completed" @click.native.prevent="checkAction(assignment)"></v-checkbox>
-      </div>
-      <div class="title">
-        <h4>{{assignment.name}}</h4>
-        <span class="due">{{date}}</span>
-      </div>
-      <div class="tags">
-        <div class="text-xs-center">
-          <v-chip
-            v-for="tag in assignment.tags"
-            :key="tag"
-            :data-tag="tag"
-            class="chip"
-            @input="removeTag(tag, assignment)"
-            outline
-            close
-          >{{tag}}</v-chip>
-        </div>
-      </div>
-      <div class="edit">
-        <v-btn fab dark small color="cyan">
-          <v-icon dark>edit</v-icon>
-        </v-btn>
-      </div>
-    </div>
-
--->
