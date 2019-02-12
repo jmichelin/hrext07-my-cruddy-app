@@ -1,6 +1,0 @@
-{
-  "env": {
-    "MONGO_URI": "mongodb://root:gabor123@ds131697.mlab.com:31697/my_cruddy_app",
-    "PORT": 5000
-  }
-}
