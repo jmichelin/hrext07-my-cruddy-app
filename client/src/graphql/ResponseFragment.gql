@@ -1,0 +1,5 @@
+fragment mutationResponse on UpdateMutationResponse {
+  success
+  code
+  message
+}

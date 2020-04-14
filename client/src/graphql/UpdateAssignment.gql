@@ -1,0 +1,11 @@
+#import "./ResponseFragment.gql"
+#import "./AssignmentFragment.gql"
+
+mutation UpdateAssignment($assignment: UpdateAssignment!) {
+  update(assignment: $assignment) {
+    ...mutationResponse
+    assignment {
+      ...assignment
+    }
+  }
+}

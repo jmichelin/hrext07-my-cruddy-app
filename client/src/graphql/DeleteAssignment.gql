@@ -1,0 +1,10 @@
+#import "./ResponseFragment.gql"
+
+mutation DeleteAssignment($id: ID!) {
+  remove(id: $id) {
+    ...mutationResponse
+    assignment {
+      _id
+    }
+  }
+}

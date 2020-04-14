@@ -1,0 +1,48 @@
+{
+  "name": "cruddy_app",
+  "version": "1.0.0",
+  "description": "A full-stack assignment manager web app built using Vue.js, Vuetlify, Node.js, Express, GraphQL, and MongoDB",
+  "main": "index.js",
+  "scripts": {
+    "client-install": "npm install --prefix client",
+    "start": "node server/index.js",
+    "server": "nodemon server/index.js",
+    "client": "npm run serve --prefix client",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
+  },
+  "keywords": [
+    "Javascript",
+    "Vue",
+    "Nuxt",
+    "Node.js",
+    "Express",
+    "Mongoose",
+    "MongoDB",
+    "CRUD",
+    "Hack Reactor",
+    "Galvanize"
+  ],
+  "author": "Gabor Szekely <gabor_szekely@hotmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "apollo-server": "^2.4.0",
+    "concurrently": "^4.1.0",
+    "core-js": "^3.0.0-beta.3",
+    "cors": "^2.8.5",
+    "graphql": "^14.1.1",
+    "mongoose": "^5.4.10"
+  },
+  "devDependencies": {
+    "cz-conventional-changelog": "^2.1.0",
+    "eslint": "^5.3.0",
+    "eslint-config-airbnb": "^17.1.0",
+    "eslint-plugin-import": "^2.16.0",
+    "eslint-plugin-jsx-a11y": "^6.2.1",
+    "eslint-plugin-react": "^7.12.4"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
+}
